@@ -1,0 +1,32 @@
+machine:
+  ruby:
+    version: 2.0.0
+  environment:
+    TERRAFORM_VERSION: 0.6.12
+
+dependencies:
+  cache_directories:
+    - ~/.terraform
+  pre:
+    - |
+      mkdir -p $HOME/.terraform
+      if [ -z "$(ls -A $HOME/.terraform/terraform_${TERRAFORM_VERSION}_linux_amd64.zip)" ]; then
+        cd $HOME/.terraform
+        curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+        unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      fi
+    - sudo cp -fR ~/.terraform/* /usr/local/bin
+
+test:
+  pre:
+    - terraform plan
+    - terraform apply
+    - cp /etc/hosts .
+    - sudo bash -c "cat hosts /tmp/hosts.txt | tee /etc/hosts"
+  override:
+    - bundle exec knife solo prepare ec2-user@webapp
+    - bundle exec knife solo cook ec2-user@webapp
+    - bundle exec rake spec
+  post:
+    - terraform plan -destroy
+    - terraform destroy -force

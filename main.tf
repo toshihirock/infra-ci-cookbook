@@ -10,10 +10,10 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = ["${var.sg_id}"]
   key_name = "${var.key_name}"
   tags {
-    name = "web"
+    name = "webapp"
   }
 
   provisioner "local-exec" {
-    command = "echo ${aws_instance.web.public_ip} ${aws_instance.web.public_dns} >> /tmp/hosts.txt"
+    command = "echo ${aws_instance.web.public_ip} webapp >> /tmp/hosts.txt"
   }
 }

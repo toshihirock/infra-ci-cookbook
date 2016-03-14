@@ -1,0 +1,5 @@
+region = "ap-northeast-1"
+key_name = "circleci"
+ami = "ami-59bdb937"
+sg_id = "sg-d8df9abd"
+subnet_id = "subnet-d949e1ae"
